@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:items_1/firebase_options.dart';
-import 'package:items_1/login.dart';
+import 'package:items_1/firstPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,6 +10,6 @@ void main() async {
   );
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: signupPage(),
+    home: firstPage(),
   ));
 }

@@ -1,19 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:items_1/home.dart';
-import 'package:items_1/signUpPage.dart';
+import 'package:items_1/login.dart';
 
 TextEditingController emailcontroller = TextEditingController();
 TextEditingController passwordcontroller = TextEditingController();
 
-class logInPage extends StatefulWidget {
-  logInPage({super.key});
+class signupPage extends StatefulWidget {
+  signupPage({super.key});
 
   @override
-  State<logInPage> createState() => _logInPageState();
+  State<signupPage> createState() => _signupPageState();
 }
 
-class _logInPageState extends State<logInPage> {
+class _signupPageState extends State<signupPage> {
   @override
   Widget build(BuildContext context) {
     Size mq = MediaQuery.sizeOf(context);
@@ -49,7 +49,6 @@ class _logInPageState extends State<logInPage> {
                   child: Column(
                     children: [
                       TextField(
-                        controller: emailcontroller,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(
                                 borderSide: BorderSide(
@@ -64,7 +63,6 @@ class _logInPageState extends State<logInPage> {
                         height: mq.height * .03,
                       ),
                       TextField(
-                        controller: passwordcontroller,
                         obscureText: true,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(
@@ -86,7 +84,7 @@ class _logInPageState extends State<logInPage> {
                             style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
                           onPressed: () {
-                            signin();
+                            signup();
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
@@ -100,14 +98,14 @@ class _logInPageState extends State<logInPage> {
                 ),
                 Row(
                   children: [
-                    Text("Sign up "),
+                    Text("Login "),
                     InkWell(
                         child: Text(" Here "),
                         onTap: () {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => signupPage(),
+                                builder: (context) => logInPage(),
                               ));
                         }),
                   ],
@@ -120,9 +118,9 @@ class _logInPageState extends State<logInPage> {
     );
   }
 
-  signin() async {
+  signup() async {
     final auth = FirebaseAuth.instance;
-    auth.signInWithEmailAndPassword(
+    auth.createUserWithEmailAndPassword(
         email: emailcontroller.text, password: passwordcontroller.text);
     SnackBar(content: Text(' Succes '));
     Navigator.pop(context);

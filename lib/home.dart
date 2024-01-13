@@ -13,10 +13,10 @@ class _homePageState extends State<homePage> {
 //creat items
 
   // text field controller
-  final TextEditingController _itemController = TextEditingController();
+  final TextEditingController _colorController = TextEditingController();
 
-  final TextEditingController _qtyController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _breedController = TextEditingController();
+  final TextEditingController _placeController = TextEditingController();
 
   final CollectionReference _items =
       FirebaseFirestore.instance.collection('items');
@@ -39,7 +39,7 @@ class _homePageState extends State<homePage> {
               children: [
                 const Center(
                   child: Text(
-                    "Add Item",
+                    "Stray Details",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -47,21 +47,22 @@ class _homePageState extends State<homePage> {
                   height: 10,
                 ),
                 TextField(
-                  controller: _itemController,
+                  controller: _colorController,
                   decoration: const InputDecoration(
-                      labelText: 'Item', hintText: 'eg.Book'),
+                    labelText: 'Dog colour',
+                  ),
                 ),
                 TextField(
-                  keyboardType: TextInputType.number,
-                  controller: _qtyController,
+                  controller: _breedController,
                   decoration: const InputDecoration(
-                      labelText: 'Quantity', hintText: 'eg.30'),
+                    labelText: 'Breed',
+                  ),
                 ),
                 TextField(
-                  keyboardType: TextInputType.number,
-                  controller: _priceController,
+                  controller: _placeController,
                   decoration: const InputDecoration(
-                      labelText: 'Price', hintText: 'eg.60'),
+                    labelText: 'Place',
+                  ),
                 ),
                 const SizedBox(
                   height: 10,
@@ -69,20 +70,20 @@ class _homePageState extends State<homePage> {
                 Center(
                   child: ElevatedButton(
                       onPressed: () async {
-                        final String item = _itemController.text;
-                        final int? qty = int.tryParse(_qtyController.text);
-                        final int? price = int.tryParse(_priceController.text);
+                        final String color = _colorController.text;
+                        final int? breed = int.tryParse(_breedController.text);
+                        final int? place = int.tryParse(_placeController.text);
 
                         // ignore: unnecessary_null_comparison
-                        if (item != null && qty != null) {
+                        if (color != null && breed != null) {
                           await _items.add({
-                            "item": item,
-                            "qty": qty,
-                            "price": price,
+                            "dogColor": color,
+                            "breed": breed,
+                            "place": place,
                           });
-                          _itemController.text = '';
-                          _qtyController.text = '';
-                          _priceController.text = '';
+                          _colorController.text = '';
+                          _breedController.text = '';
+                          _placeController.text = '';
 
                           Navigator.of(context).pop();
                         }
@@ -106,18 +107,27 @@ class _homePageState extends State<homePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 57, 175, 234),
+          backgroundColor: Colors.blue,
           centerTitle: true,
-          title: const Text("Items"),
+          title: const Text(
+            " Nearby Strays",
+            style: TextStyle(
+                color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+          ),
         ),
         floatingActionButton: SizedBox(
           width: 150,
           child: FloatingActionButton(
-            child: const Row(
+            backgroundColor: Colors.blueAccent,
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Icon(Icons.person_add_alt_1_outlined),
-                Text('Add Item'),
+                SizedBox(
+                  height: 40,
+                  child: Image.network(
+                      'https://www.clipartbest.com/cliparts/eTM/EGX/eTMEGXk8c.png'),
+                ),
+                Text('Spot A Stray'),
               ],
             ),
             onPressed: () {
@@ -125,78 +135,101 @@ class _homePageState extends State<homePage> {
             },
           ),
         ),
-        body: StreamBuilder<QuerySnapshot>(
-            stream: _stream,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasError) {
-                return Center(child: Text("Error${snapshot.error}"));
-              }
-              if (snapshot.hasData) {
-                QuerySnapshot querySnapshot = snapshot.data;
-                List<QueryDocumentSnapshot> document = querySnapshot.docs;
-                List<Map> items = document.map((e) => e.data() as Map).toList();
-                // List <MapEntry <String,int>> sortList =document.e
-                return ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Map thisItems = items[index];
+        body: Container(
+          height: MediaQuery.sizeOf(context).height,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purple, Colors.blue],
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+            ),
+          ),
+          child: StreamBuilder<QuerySnapshot>(
+              stream: _stream,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text("Error${snapshot.error}"));
+                }
+                if (snapshot.hasData) {
+                  QuerySnapshot querySnapshot = snapshot.data;
+                  List<QueryDocumentSnapshot> document = querySnapshot.docs;
+                  List<Map> items =
+                      document.map((e) => e.data() as Map).toList();
+                  // List <MapEntry <String,int>> sortList =document.e
+                  return ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      Map thisItems = items[index];
 
-                    return Card(
-                      color: const Color.fromARGB(255, 68, 230, 122),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      margin: const EdgeInsets.all(10),
-                      child: ListTile(
-                        leading: thisItems.containsKey('image')
-                            ? const SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: CircleAvatar(
-                                    radius: 17,
-                                    backgroundColor:
-                                        Color.fromARGB(255, 129, 226, 243),
-                                    child: ClipOval(
-                                        child: Icon(Icons
-                                            .dashboard_customize_outlined))),
-                              )
-                            : const SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: CircleAvatar(
-                                    radius: 17,
-                                    backgroundColor:
-                                        Color.fromARGB(255, 122, 247, 238),
-                                    child: Icon(Icons.person)),
-                              ),
-                        title: Text(
-                          "${thisItems['item']}",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 20),
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Quantity :${thisItems['qty']}",
-                              style: const TextStyle(color: Colors.black),
+                        margin: const EdgeInsets.all(10),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.fromARGB(255, 224, 135, 242),
+                                Color.fromARGB(255, 50, 183, 254)
+                              ],
+                              begin: Alignment.bottomLeft,
+                              end: Alignment.topRight,
                             ),
-                            Text(
-                              "Price :${thisItems['price']}",
-                              style: const TextStyle(color: Colors.black),
+                          ),
+                          child: ListTile(
+                            leading: thisItems.containsKey('image')
+                                ? const SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: CircleAvatar(
+                                        radius: 17,
+                                        backgroundColor:
+                                            Color.fromARGB(255, 129, 226, 243),
+                                        child: ClipOval(
+                                            child: Icon(Icons
+                                                .dashboard_customize_outlined))),
+                                  )
+                                : const SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: CircleAvatar(
+                                        radius: 17,
+                                        backgroundColor:
+                                            Color.fromARGB(255, 122, 247, 238),
+                                        child: Icon(Icons.person)),
+                                  ),
+                            title: Text(
+                              "${thisItems['item']}",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontSize: 20),
                             ),
-                          ],
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Quantity :${thisItems['qty']}",
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                                Text(
+                                  "Price :${thisItems['price']}",
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }));
+              }),
+        ));
   }
 }
