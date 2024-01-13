@@ -201,7 +201,7 @@ class _homePageState extends State<homePage> {
                                         child: Icon(Icons.person)),
                                   ),
                             title: Text(
-                              "${thisItems['item']}",
+                              "${thisItems['color']}",
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
@@ -211,11 +211,11 @@ class _homePageState extends State<homePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Quantity :${thisItems['qty']}",
+                                  "Breed :${thisItems['breed']}",
                                   style: const TextStyle(color: Colors.black),
                                 ),
                                 Text(
-                                  "Price :${thisItems['price']}",
+                                  "Place :${thisItems['place']}",
                                   style: const TextStyle(color: Colors.black),
                                 ),
                               ],
